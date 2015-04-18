@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteConfig;
 
 /**
- * Abstracts from the Songbird database database file. Make sure to call {@link #setDbFile(String)} before using it and
+ * Abstracts from the Songbird database database file. Make sure to call
  * {@link #close()} after using it.
  * 
  * <b>This class is not thread safe.</b> Use a new instance in each thread.
@@ -48,7 +48,8 @@ public final class SongbirdDbConnection {
 	}
 
 	/** SLF4J-Logger. */
-	private final Logger logger = LoggerFactory.getLogger(SongbirdDbConnection.class);
+	private final Logger logger = LoggerFactory
+			.getLogger(SongbirdDbConnection.class);
 
 	/** The jdbc prefix used for connecting. */
 	private static final String JDBC_PREFIX = "jdbc:sqlite:";
@@ -92,7 +93,8 @@ public final class SongbirdDbConnection {
 	 * 
 	 * @return a connection ready for queries to the songbird database
 	 * @throws SQLException
-	 *             in case of any problems (e.g. SQLite-related or missing database URL)
+	 *             in case of any problems (e.g. SQLite-related or missing
+	 *             database URL)
 	 */
 	private Connection getConnection() throws SQLException {
 		if (connection == null) {
@@ -108,7 +110,8 @@ public final class SongbirdDbConnection {
 				// Class.forName("org.sqlite.Driver");
 
 			} catch (ClassNotFoundException e) {
-				throw new SQLException("SQLlite driver not found on classpath", e);
+				throw new SQLException("SQLlite driver not found on classpath",
+						e);
 			}
 			SQLiteConfig config = new SQLiteConfig();
 			config.setReadOnly(true);
@@ -133,7 +136,8 @@ public final class SongbirdDbConnection {
 	 * 
 	 * @return a new statement object.
 	 * @throws SQLException
-	 *             if a database access error occurs or this method is called on a closed connection
+	 *             if a database access error occurs or this method is called on
+	 *             a closed connection
 	 */
 	private Statement getStatment() throws SQLException {
 		Connection actualConnection = getConnection();
@@ -147,13 +151,16 @@ public final class SongbirdDbConnection {
 	 * Executes an SQL query as a new Statement.
 	 * 
 	 * @param query
-	 *            an SQL statement to be sent to the database, typically a static SQL SELECT statement
+	 *            an SQL statement to be sent to the database, typically a
+	 *            static SQL SELECT statement
 	 * 
-	 * @return a ResultSet object that contains the data produced by the given query; never null
+	 * @return a ResultSet object that contains the data produced by the given
+	 *         query; never null
 	 * @throws SQLException
-	 *             if a database access error occurs, this method is called on a closed Statement, the given SQL
-	 *             statement produces anything other than a single ResultSet object, the method is called on a
-	 *             PreparedStatement or CallableStatement
+	 *             if a database access error occurs, this method is called on a
+	 *             closed Statement, the given SQL statement produces anything
+	 *             other than a single ResultSet object, the method is called on
+	 *             a PreparedStatement or CallableStatement
 	 */
 	public ResultSet executeQuery(final String query) throws SQLException {
 		// logger.debug("Query to SQLite: " + query);
@@ -161,17 +168,22 @@ public final class SongbirdDbConnection {
 	}
 
 	/**
-	 * Creates a PreparedStatement object for sending parameterized SQL statements to the database.
+	 * Creates a PreparedStatement object for sending parameterized SQL
+	 * statements to the database.
 	 * 
 	 * @param query
-	 *            an SQL statement that may contain one or more '?' IN parameter placeholders
+	 *            an SQL statement that may contain one or more '?' IN parameter
+	 *            placeholders
 	 * 
-	 * @return new default PreparedStatement object containing the pre-compiled SQL statement
+	 * @return new default PreparedStatement object containing the pre-compiled
+	 *         SQL statement
 	 * 
 	 * @throws SQLException
-	 *             if a database access error occurs or this method is called on a closed connection
+	 *             if a database access error occurs or this method is called on
+	 *             a closed connection
 	 */
-	public PreparedStatement preparedStatement(final String query) throws SQLException {
+	public PreparedStatement preparedStatement(final String query)
+			throws SQLException {
 		return getConnection().prepareStatement(query);
 	}
 

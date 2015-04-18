@@ -40,8 +40,8 @@ public final class MediaListTypes {
 	public static final String QUERY_LIST_TYPES = "select * from media_list_types";
 
 	/*
-	 * Why not use enum, which would be easier to use and more efficient? Software must be adapted to DB changes, i.e.
-	 * map is more flexible
+	 * Why not use enum, which would be easier to use and more efficient?
+	 * Software must be adapted to DB changes, i.e. map is more flexible
 	 */
 	/** Mapping from string constants (database enums) to numerical IDs. */
 	private static Map<String, Integer> listTyep2IdMap;
@@ -49,16 +49,19 @@ public final class MediaListTypes {
 	private static Map<Integer, String> id2ListTypeMap;
 
 	/**
-	 * Initializes the mappings from string constants (database enums) to numerical IDs and the other way round from the
-	 * database.
+	 * Initializes the mappings from string constants (database enums) to
+	 * numerical IDs and the other way round from the database.
 	 * 
 	 * To avoid doing this again and again, use {@link #isInitialized()}.
 	 * 
+	 * @param connection
+	 *            database connection to use for querying
 	 * @throws SQLException
 	 *             in case an error occurs during the db query.
 	 * 
 	 */
-	public static void populatelistTypeMap(SongbirdDbConnection connection) throws SQLException {
+	public static void populatelistTypeMap(SongbirdDbConnection connection)
+			throws SQLException {
 		listTyep2IdMap = new HashMap<String, Integer>();
 		id2ListTypeMap = new HashMap<Integer, String>();
 		ResultSet rs = connection.executeQuery(QUERY_LIST_TYPES);
@@ -83,7 +86,8 @@ public final class MediaListTypes {
 
 	/**
 	 * @param listType
-	 *            a string representation to be mapped to the corresponding numerical ID.
+	 *            a string representation to be mapped to the corresponding
+	 *            numerical ID.
 	 * @return the numerical ID of a string representation.
 	 */
 	public static int listType2Id(final String listType) {
@@ -91,17 +95,17 @@ public final class MediaListTypes {
 	}
 
 	/**
-	 * Checks if maps have been initialized from database.
+	 * Checks if maps have been initialized from database. If not better call
+	 * {@link #populatelistTypeMap(SongbirdDbConnection)}
 	 * 
-	 * @return
+	 * @return <code>true</code> if initialized, otherwise <code>false</code>
 	 */
 	public static boolean isInitialized() {
-		if (id2ListTypeMap == null || id2ListTypeMap.size() == 0 || listTyep2IdMap == null
-				|| listTyep2IdMap.size() == 0) {
+		if (id2ListTypeMap == null || id2ListTypeMap.size() == 0
+				|| listTyep2IdMap == null || listTyep2IdMap.size() == 0) {
 			return false;
 		} else {
 			return true;
 		}
 	}
-
 }

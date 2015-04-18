@@ -32,48 +32,61 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Provides queries to the songbird database related to playlists and its members.
+ * Provides queries to the songbird database related to playlists and its
+ * members.
  * 
  * @author schnatterer
  * 
  */
 public class SongbirdDb {
 	// /** SLF4J-Logger. */
-	// private static Logger logger = LoggerFactory.getLogger(PlaylistService.class);
+	// private static Logger logger =
+	// LoggerFactory.getLogger(PlaylistService.class);
 
 	/**
-	 * Gets all media items that have is_list = 1, INCLUDING emtpy ones. Faster query than
-	 * {@link #QUERY_MEDIA_LISTS_TYPE_SIMPLE_OLD}. Does also find dynamic playlist (subscriptions) (unfortunately also
-	 * finds playlist that have name null)
+	 * Gets all media items that have is_list = 1, INCLUDING emtpy ones. Faster
+	 * query than {@link #QUERY_MEDIA_LISTS_TYPE_SIMPLE_OLD}. Does also find
+	 * dynamic playlist (subscriptions) (unfortunately also finds playlist that
+	 * have name null)
 	 */
 	public static final String QUERY_MEDIA_LISTS_TYPE_SIMPLE = "select m.media_item_id, m.content_url"
 			+ ", m.media_list_type_id, r.property_id, r.obj from media_items m "
 			+ "left join resource_properties as r on m.media_item_id = r.media_item_id "
 			+ "left join media_list_types as mlt on m.media_list_type_id = mlt.media_list_type_id "
-			+ "where m.is_list = 1 " + "and m.media_list_type_id is not null " + "order by m.media_item_id ";
+			+ "where m.is_list = 1 "
+			+ "and m.media_list_type_id is not null "
+			+ "order by m.media_item_id ";
 
 	/**
-	 * Gets all lists that have the list type 'simple', INCLUDING empty ones. Faster query than
-	 * {@link #QUERY_MEDIA_LISTS_DISTINCT}. Does NOT find dynamic playlist (subscriptions)
+	 * Gets all lists that have the list type 'simple', INCLUDING empty ones.
+	 * Faster query than {@link #QUERY_MEDIA_LISTS_DISTINCT}. Does NOT find
+	 * dynamic playlist (subscriptions)
 	 */
 	public static final String QUERY_MEDIA_LISTS_TYPE_SIMPLE_OLD = "select m.media_item_id, m.content_url"
 			+ ", m.media_list_type_id, r.property_id, r.obj from media_items m "
 			+ "left join resource_properties as r on m.media_item_id = r.media_item_id "
 			+ "left join media_list_types as mlt on m.media_list_type_id = mlt.media_list_type_id "
-			+ "where m.is_list = 1 " + "and mlt.type = 'simple'" + "order by m.media_item_id ";
+			+ "where m.is_list = 1 "
+			+ "and mlt.type = 'simple'"
+			+ "order by m.media_item_id ";
 
 	/**
-	 * Gets all lists that are found within the simplemedialists table, that does NOT including empty ones. Query is
-	 * slower than {@link #QUERY_MEDIA_LISTS_TYPE_SIMPLE}. DOES find dynamic playlist (subscriptions)
+	 * Gets all lists that are found within the simplemedialists table, that
+	 * does NOT including empty ones. Query is slower than
+	 * {@link #QUERY_MEDIA_LISTS_TYPE_SIMPLE}. DOES find dynamic playlist
+	 * (subscriptions)
 	 */
 	public static final String QUERY_MEDIA_LISTS_DISTINCT = "select distinct l.media_item_id, m.content_url "
 			+ ", m.media_list_type_id, r.property_id, r.obj from simple_media_lists l "
 			+ "left join media_items m ON m.media_item_id = l.media_item_id "
-			+ "left join resource_properties as r on m.media_item_id = r.media_item_id " + "order by l.media_item_id";
+			+ "left join resource_properties as r on m.media_item_id = r.media_item_id "
+			+ "order by l.media_item_id";
 
 	/**
-	 * Gets all media items with a single playlist (realized as {@link PreparedStatement}). The results contains several
-	 * lines for one member, that is it also contains the properties, in order to minimize the queries sent to SQLite.
+	 * Gets all media items with a single playlist (realized as
+	 * {@link PreparedStatement}). The results contains several lines for one
+	 * member, that is it also contains the properties, in order to minimize the
+	 * queries sent to SQLite.
 	 * 
 	 */
 	public static final String QUERY_MEDIA_LIST = "select l.member_media_item_id, l.ordinal, m.content_url "
@@ -82,7 +95,8 @@ public class SongbirdDb {
 			+ "left join resource_properties as r on m.media_item_id = r.media_item_id "
 			// + "where l.media_item_id =? COLLATE NOCASE " +
 			// "order by l.member_media_item_id ";
-			+ "where l.media_item_id =? COLLATE NOCASE " + "order by l.ordinal COLLATE NOCASE";
+			+ "where l.media_item_id =? COLLATE NOCASE "
+			+ "order by l.ordinal COLLATE NOCASE";
 
 	private final String pathToDb;
 
@@ -116,7 +130,8 @@ public class SongbirdDb {
 		// Make sure Property and MediaListType Maps are initialized
 		synchronized (SongbirdDb.class) {
 			if (!MediaListTypes.isInitialized() || !Property.isInitialized()) {
-				SongbirdDbConnection connection = new SongbirdDbConnection(pathToDb);
+				SongbirdDbConnection connection = new SongbirdDbConnection(
+						pathToDb);
 				try {
 					MediaListTypes.populatelistTypeMap(connection);
 					Property.populateResourceMap(connection);
@@ -130,22 +145,24 @@ public class SongbirdDb {
 	}
 
 	/**
-	 * Gets only the {@link MediaItem}s that are playlists. Does not get the {@link MediaItem}s which are members of the
-	 * playlist. Ignores all playlists that don't have a name.
+	 * Gets only the {@link MediaItem}s that are playlists. Does not get the
+	 * {@link MediaItem}s which are members of the playlist. Ignores all
+	 * playlists that don't have a name.
 	 * 
 	 * @param ignoreInternalPlaylists
-	 *            <code>true</code> ignores Songbird's internal playlists (all playlists having an mediaListType !=
-	 *            simple)
+	 *            <code>true</code> ignores Songbird's internal playlists (all
+	 *            playlists having an mediaListType != simple)
 	 * @param skipDynamicLists
-	 *            <code>true</code> does not return songbird's "smart" playlists (all playlists whose name starts with
-	 *            "&smart")
+	 *            <code>true</code> does not return songbird's "smart" playlists
+	 *            (all playlists whose name starts with "&amp;smart")
 	 * @return the playlist {@link MediaItem}
 	 * @throws SQLException
 	 *             database-related exceptions
-	 * @see {@link #getPlayLists()}
+	 * @see #getPlayLists(boolean, boolean)
 	 */
-	public List<MediaItem> getPlaylistItems(final boolean ignoreInternalPlaylists, final boolean skipDynamicLists)
-			throws SQLException {
+	public List<MediaItem> getPlaylistItems(
+			final boolean ignoreInternalPlaylists,
+			final boolean skipDynamicLists) throws SQLException {
 		/**
 		 * Note: Get all playlists and attributes in on result set like this
 		 * 
@@ -162,7 +179,8 @@ public class SongbirdDb {
 
 		SongbirdDbConnection connection = new SongbirdDbConnection(pathToDb);
 		try {
-			ResultSet rs = connection.executeQuery(QUERY_MEDIA_LISTS_TYPE_SIMPLE);
+			ResultSet rs = connection
+					.executeQuery(QUERY_MEDIA_LISTS_TYPE_SIMPLE);
 			// .executeQuery(QUERY_MEDIA_LISTS_DISTINCT);
 
 			if (rs.next()) { // If there are results at all
@@ -174,7 +192,8 @@ public class SongbirdDb {
 					m.setContentUrl(rs.getString("content_url"));
 					currentId = getProperties(m, rs, "media_item_id");
 
-					String mediaListName = m.getProperty(Property.PROP_MEDIA_LIST_NAME);
+					String mediaListName = m
+							.getProperty(Property.PROP_MEDIA_LIST_NAME);
 
 					// Skip all playlist without name
 					if (mediaListName == null) {
@@ -182,22 +201,30 @@ public class SongbirdDb {
 					}
 
 					if (ignoreInternalPlaylists) {
-						String mediaListType = m.getProperty(Property.PROP_CUSTOM_TYPE);
-						// if (mediaListName != null && mediaListName.startsWith("&")) {
+						String mediaListType = m
+								.getProperty(Property.PROP_CUSTOM_TYPE);
+						// if (mediaListName != null &&
+						// mediaListName.startsWith("&")) {
 						/*
-						 * Note: Dynamic and internal playlists start with '&'. However, a dynamic playlist's customType
-						 * is "simple", as with it is for "normal" playlists. Internal playlists have a type like
-						 * "download" or "smart". So in order to ignore internal playlists it would be possible to
-						 * filter for the custom type.
+						 * Note: Dynamic and internal playlists start with '&'.
+						 * However, a dynamic playlist's customType is "simple",
+						 * as with it is for "normal" playlists. Internal
+						 * playlists have a type like "download" or "smart". So
+						 * in order to ignore internal playlists it would be
+						 * possible to filter for the custom type.
 						 * 
-						 * In addition, most internal playlists don't have a name. But not all!
+						 * In addition, most internal playlists don't have a
+						 * name. But not all!
 						 * 
-						 * It also seems that only internal lists have a mediaListType of "dynamic". But not all!
+						 * It also seems that only internal lists have a
+						 * mediaListType of "dynamic". But not all!
 						 * 
 						 * So skip any playlists with customType != "simple"
 						 */
-						if (mediaListType != null && !mediaListType.equals("simple")) {
-							// && mediaListName == null && m.getListType().equals("dynamic")) {
+						if (mediaListType != null
+								&& !mediaListType.equals("simple")) {
+							// && mediaListName == null &&
+							// m.getListType().equals("dynamic")) {
 							// Skip this one
 							continue;
 						}
@@ -212,10 +239,14 @@ public class SongbirdDb {
 					}
 
 					// /* Discard playlist that don't have a name property */
-					// if (m.getProperty(Property.PROP_MEDIA_LIST_NAME) == null) {
-					// logger.warn("Found playlist with no name. Skipping list. " + m);
-					// } else if (skipDynamicLists && m.getListType().equals("dynamic")) {
-					// logger.info("Skipping dynamic list " + m.getProperty(Property.PROP_MEDIA_LIST_NAME));
+					// if (m.getProperty(Property.PROP_MEDIA_LIST_NAME) == null)
+					// {
+					// logger.warn("Found playlist with no name. Skipping list. "
+					// + m);
+					// } else if (skipDynamicLists &&
+					// m.getListType().equals("dynamic")) {
+					// logger.info("Skipping dynamic list " +
+					// m.getProperty(Property.PROP_MEDIA_LIST_NAME));
 					// } else {
 					playListItems.add(m);
 					// }
@@ -232,47 +263,59 @@ public class SongbirdDb {
 	}
 
 	/**
-	 * Gets all {@link MediaItem}s that are playlists and also aggregates the {@link MediaItem}s that are members of the
-	 * playlists. Ignores all playlists that don't have a name.
+	 * Gets all {@link MediaItem}s that are playlists and also aggregates the
+	 * {@link MediaItem}s that are members of the playlists. Ignores all
+	 * playlists that don't have a name.
 	 * 
 	 * @param ignoreInternalPlaylists
-	 *            <code>true</code> ignores Songbird's internal playlists (all playlists having an mediaListType !=
-	 *            simple)
+	 *            <code>true</code> ignores Songbird's internal playlists (all
+	 *            playlists having an mediaListType != simple)
 	 * @param skipDynamicLists
-	 *            <code>true</code> does not return songbird's "smart" playlists (all playlists whose name starts with
-	 *            "&smart")
+	 *            <code>true</code> does not return songbird's "smart" playlists
+	 *            (all playlists whose name starts with "&amp;smart")
 	 * 
-	 * @return an object that contains the "parent" (playlist) {@link MediaItem} as well as all of its member
-	 *         {@link MediaItem}s
+	 * @return an object that contains the "parent" (playlist) {@link MediaItem}
+	 *         as well as all of its member {@link MediaItem}s
 	 * @throws SQLException
 	 *             database-related exceptions
 	 */
-	public List<SimpleMediaList> getPlayLists(final boolean ignoreInternalPlaylists, final boolean skipDynamicLists)
-			throws SQLException {
+	public List<SimpleMediaList> getPlayLists(
+			final boolean ignoreInternalPlaylists,
+			final boolean skipDynamicLists) throws SQLException {
 
-		List<MediaItem> playListItems = getPlaylistItems(ignoreInternalPlaylists, skipDynamicLists);
+		List<MediaItem> playListItems = getPlaylistItems(
+				ignoreInternalPlaylists, skipDynamicLists);
 
 		List<SimpleMediaList> playLists = new LinkedList<SimpleMediaList>();
 		SongbirdDbConnection connection = new SongbirdDbConnection(pathToDb);
 		try {
-			PreparedStatement queryMediaList = connection.preparedStatement(QUERY_MEDIA_LIST);
+			PreparedStatement queryMediaList = connection
+					.preparedStatement(QUERY_MEDIA_LIST);
 			for (MediaItem playlistMediaItem : playListItems) {
 
 				// This is taken care of by getPlaylistItems() now
 				// if (ignoreInternalPlaylists) {
-				// String mediaListName = playlistMediaItem.getProperty(Property.PROP_MEDIA_LIST_NAME);
-				// String mediaListType = playlistMediaItem.getProperty(Property.PROP_CUSTOM_TYPE);
+				// String mediaListName =
+				// playlistMediaItem.getProperty(Property.PROP_MEDIA_LIST_NAME);
+				// String mediaListType =
+				// playlistMediaItem.getProperty(Property.PROP_CUSTOM_TYPE);
 				// /*
-				// * Note: Dynamic and internal playlists start with '&'. However, a dynamic playlist's customType is
-				// * "simple", as with it is for "normal" playlists. Internal playlists have a type like "download" or
-				// * "smart". So in order to ignore internal playlists it would be possible to filter for the custom
+				// * Note: Dynamic and internal playlists start with '&'.
+				// However, a dynamic playlist's customType is
+				// * "simple", as with it is for "normal" playlists. Internal
+				// playlists have a type like "download" or
+				// * "smart". So in order to ignore internal playlists it would
+				// be possible to filter for the custom
 				// type.
 				// * In addition, most internal playlists don't have a name.
 				// *
-				// * So skip any playlists without name and customType != "simple".
+				// * So skip any playlists without name and customType !=
+				// "simple".
 				// */
-				// // if (mediaListName != null && mediaListName.startsWith("&")) {
-				// if (mediaListName == null && mediaListType != null && !mediaListType.equals("simple")) {
+				// // if (mediaListName != null &&
+				// mediaListName.startsWith("&")) {
+				// if (mediaListName == null && mediaListType != null &&
+				// !mediaListType.equals("simple")) {
 				// // Skip this one
 				// continue;
 				// }
@@ -303,7 +346,8 @@ public class SongbirdDb {
 						member.setId(currentId);
 						member.setListType(rs.getInt("media_list_type_id"));
 						member.setContentUrl(rs.getString("content_url"));
-						currentId = getProperties(member, rs, "member_media_item_id");
+						currentId = getProperties(member, rs,
+								"member_media_item_id");
 
 						memberWrapper.setMember(member);
 
@@ -336,8 +380,9 @@ public class SongbirdDb {
 	}
 
 	/**
-	 * Reads all properties for an id column (integer) and appends them to <code>mediaItem</code>. Note: This will only
-	 * work well if <code>rs</code> is ordered by <code>idColumn</code>.
+	 * Reads all properties for an id column (integer) and appends them to
+	 * <code>mediaItem</code>. Note: This will only work well if <code>rs</code>
+	 * is ordered by <code>idColumn</code>.
 	 * 
 	 * @param mediaItem
 	 *            item to attach the properties to
@@ -349,8 +394,8 @@ public class SongbirdDb {
 	 * @throws SQLException
 	 *             database-related exceptions
 	 */
-	private int getProperties(final MediaItem mediaItem, final ResultSet rs, final String idColumn)
-			throws SQLException {
+	private int getProperties(final MediaItem mediaItem, final ResultSet rs,
+			final String idColumn) throws SQLException {
 		boolean moreData = false;
 		int currentId = mediaItem.getId();
 		Map<Integer, String> props = mediaItem.getProperties();

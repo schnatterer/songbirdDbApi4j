@@ -192,15 +192,18 @@ public final class Property {
 	private static Map<String, Integer> property2IdMap;
 
 	/**
-	 * Initializes the mappings from string constants (database enums) to numerical IDs and the other way round from the
-	 * database.
+	 * Initializes the mappings from string constants (database enums) to
+	 * numerical IDs and the other way round from the database.
 	 * 
 	 * To avoid doing this again and again, use {@link #isInitialized()}.
 	 * 
+	 * @param connection
+	 *            database connection to use for querying
 	 * @throws SQLException
 	 *             in case an error occurs during the db query.
 	 */
-	public static void populateResourceMap(SongbirdDbConnection connection) throws SQLException {
+	public static void populateResourceMap(SongbirdDbConnection connection)
+			throws SQLException {
 		property2IdMap = new HashMap<String, Integer>();
 		id2PropertyMap = new HashMap<Integer, String>();
 		ResultSet rs = connection.executeQuery(QUERY_PROPERTIES);
@@ -224,7 +227,8 @@ public final class Property {
 
 	/**
 	 * @param property
-	 *            a string representation to be mapped to the corresponding numerical ID.
+	 *            a string representation to be mapped to the corresponding
+	 *            numerical ID.
 	 * @return the numerical ID of a string representation.
 	 */
 	public static int property2Id(final String property) {
@@ -232,13 +236,14 @@ public final class Property {
 	}
 
 	/**
-	 * Checks if maps have been initialized from database.
+	 * Checks if maps have been initialized from database. If not better call
+	 * {@link #populateResourceMap(SongbirdDbConnection)}.
 	 * 
-	 * @return
+	 * @return <code>true</code> if initialized, otherwise <code>false</code>
 	 */
 	public static boolean isInitialized() {
-		if (property2IdMap == null || property2IdMap.size() == 0 || id2PropertyMap == null
-				|| id2PropertyMap.size() == 0) {
+		if (property2IdMap == null || property2IdMap.size() == 0
+				|| id2PropertyMap == null || id2PropertyMap.size() == 0) {
 			return false;
 		} else {
 			return true;

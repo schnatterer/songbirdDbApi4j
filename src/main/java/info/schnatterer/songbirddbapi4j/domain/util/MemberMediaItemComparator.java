@@ -69,8 +69,8 @@ public class MemberMediaItemComparator implements Comparator<MemberMediaItem> {
 	 *            the first ordinal to be compared
 	 * @param str2
 	 *            the second ordinal to be compared
-	 * @return < 0 when the first argument is less than the second. Return 0
-	 *         when the first argument equals the second. Return > 0 when the
+	 * @return &lt; 0 when the first argument is less than the second. Return 0
+	 *         when the first argument equals the second. Return &gt; 0 when the
 	 *         first argument is greater than the second. Or the opposite, if
 	 *         #get
 	 */
