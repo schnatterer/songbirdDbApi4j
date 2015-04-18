@@ -1,4 +1,4 @@
-# itunes4j
+# songbirdDbApi4j
 A java wrapper for songbird SQLite database.
 
 ## How to use
