@@ -18,7 +18,7 @@ Then add the actual dependency
         <version>1.0</version>
     </dependency>
 
-See the [wiki](https://github.com/schnatterer/songbirdDbApi4j/wiki) for details on how to use the API.
+See the [wiki](https://github.com/schnatterer/songbirdDbApi4j/wiki) for details on how to use the API or see the  [songbirdDbTools](https://github.com/schnatterer/songbirdDbTools) that makes use of this API.
     
 ## History
 ###Version 1.0
