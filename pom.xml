@@ -30,7 +30,7 @@
 			+ password, for deploying artifacts to github maven repo -->
 		<github.global.server>github</github.global.server>
 	</properties>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -59,35 +59,19 @@
 					<altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo</altDeploymentRepository>
 				</configuration>
 			</plugin>
-			<plugin> <!-- Configure the site-maven-plugin to upload from temporary staging repo 
-					to mvn-repo branch on github. Calling "mvn clean deploy" will build and deploy 
-					the artifacts. Unfortunately, this results in an error send by the github 
-					API ""nil is not a string. (422)". -->
-				<groupId>com.github.github</groupId>
-				<artifactId>site-maven-plugin</artifactId>
-				<version>0.11</version>
-				<configuration>
-					<!-- git commit message -->
-					<message>Maven artifacts for ${project.version}</message>
-					<!-- Same path as in maven-deploy-plugin -->
-					<outputDirectory>${project.build.directory}/mvn-repo</outputDirectory>
-					<!-- remote branch name -->
-					<branch>refs/heads/mvn-repo</branch>
-					<includes>
-						<include>**/*</include>
-					</includes> <!-- Don't overwrite previous releases -->
-					<merge>true</merge>
-				</configuration>
-				<executions> <!-- run site-maven-plugin's 'site' target as part of the build's normal 
-						'deploy' phase -->
-					<execution>
-						<goals>
-							<goal>site</goal>
-						</goals>
-						<phase>deploy</phase>
-					</execution>
-				</executions>
-			</plugin>
+			<!-- <plugin> <!- Configure the site-maven-plugin to upload from temporary 
+				staging repo to mvn-repo branch on github. Calling "mvn clean deploy" will 
+				build and deploy the artifacts. Unfortunately, this results in an error send 
+				by the github API ""nil is not a string. (422)". -> <groupId>com.github.github</groupId> 
+				<artifactId>site-maven-plugin</artifactId> <version>0.11</version> <configuration> 
+				<!- git commit message -> <message>Maven artifacts for ${project.version}</message> 
+				<!- Same path as in maven-deploy-plugin -> <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory> 
+				<!- remote branch name -> <branch>refs/heads/mvn-repo</branch> <includes> 
+				<include>**/*</include> </includes> <!- Don't overwrite previous releases 
+				-> <merge>true</merge> </configuration> <executions> <!- run site-maven-plugin's 
+				'site' target as part of the build's normal 'deploy' phase -> <execution> 
+				<goals> <goal>site</goal> </goals> <phase>deploy</phase> </execution> </executions> 
+				</plugin> -->
 		</plugins>
 	</build>
 
