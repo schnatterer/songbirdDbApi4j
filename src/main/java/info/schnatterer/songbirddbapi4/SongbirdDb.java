@@ -27,6 +27,7 @@ import info.schnatterer.songbirddbapi4j.domain.SimpleMediaList;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -44,13 +45,21 @@ public class SongbirdDb {
 	// LoggerFactory.getLogger(PlaylistService.class);
 
 	/**
+	 * Gets all media items that have is_list = 0.
+	 */
+	public static final String QUERY_MEDIA_ITEMS = "select m.media_item_id, m.content_url"
+			+ ", m.created, m.updated, r.property_id, r.obj from media_items m "
+			+ "left join resource_properties as r on m.media_item_id = r.media_item_id "
+			+ "where m.is_list = 0 " + "order by m.media_item_id ";
+
+	/**
 	 * Gets all media items that have is_list = 1, INCLUDING emtpy ones. Faster
 	 * query than {@link #QUERY_MEDIA_LISTS_TYPE_SIMPLE_OLD}. Does also find
 	 * dynamic playlist (subscriptions) (unfortunately also finds playlist that
 	 * have name null)
 	 */
 	public static final String QUERY_MEDIA_LISTS_TYPE_SIMPLE = "select m.media_item_id, m.content_url"
-			+ ", m.media_list_type_id, r.property_id, r.obj from media_items m "
+			+ ", m.media_list_type_id, m.created, m.updated, r.property_id, r.obj from media_items m "
 			+ "left join resource_properties as r on m.media_item_id = r.media_item_id "
 			+ "left join media_list_types as mlt on m.media_list_type_id = mlt.media_list_type_id "
 			+ "where m.is_list = 1 "
@@ -63,7 +72,7 @@ public class SongbirdDb {
 	 * dynamic playlist (subscriptions)
 	 */
 	public static final String QUERY_MEDIA_LISTS_TYPE_SIMPLE_OLD = "select m.media_item_id, m.content_url"
-			+ ", m.media_list_type_id, r.property_id, r.obj from media_items m "
+			+ ", m.media_list_type_id, m.created, m.updated, r.property_id, r.obj from media_items m "
 			+ "left join resource_properties as r on m.media_item_id = r.media_item_id "
 			+ "left join media_list_types as mlt on m.media_list_type_id = mlt.media_list_type_id "
 			+ "where m.is_list = 1 "
@@ -73,11 +82,10 @@ public class SongbirdDb {
 	/**
 	 * Gets all lists that are found within the simplemedialists table, that
 	 * does NOT including empty ones. Query is slower than
-	 * {@link #QUERY_MEDIA_LISTS_TYPE_SIMPLE}. DOES find dynamic playlist
-	 * (subscriptions)
+	 * {@link #QUERY_MEDIA_ITEMS}. DOES find dynamic playlist (subscriptions)
 	 */
 	public static final String QUERY_MEDIA_LISTS_DISTINCT = "select distinct l.media_item_id, m.content_url "
-			+ ", m.media_list_type_id, r.property_id, r.obj from simple_media_lists l "
+			+ ", m.media_list_type_id, m.created, m.updated, r.property_id, r.obj from simple_media_lists l "
 			+ "left join media_items m ON m.media_item_id = l.media_item_id "
 			+ "left join resource_properties as r on m.media_item_id = r.media_item_id "
 			+ "order by l.media_item_id";
@@ -90,7 +98,7 @@ public class SongbirdDb {
 	 * 
 	 */
 	public static final String QUERY_MEDIA_LIST = "select l.member_media_item_id, l.ordinal, m.content_url "
-			+ ", m.media_list_type_id, r.property_id, r.obj from simple_media_lists l "
+			+ ", m.media_list_type_id, m.created, m.updated, r.property_id, r.obj from simple_media_lists l "
 			+ "left join media_items m ON m.media_item_id = l.member_media_item_id "
 			+ "left join resource_properties as r on m.media_item_id = r.media_item_id "
 			// + "where l.media_item_id =? COLLATE NOCASE " +
@@ -145,6 +153,33 @@ public class SongbirdDb {
 	}
 
 	/**
+	 * Gets only the {@link MediaItem}s that are not playlists.
+	 * 
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<MediaItem> getAllTracks() throws SQLException {
+		List<MediaItem> playListItems = new LinkedList<MediaItem>();
+
+		SongbirdDbConnection connection = new SongbirdDbConnection(pathToDb);
+		try {
+			ResultSet rs = connection.executeQuery(QUERY_MEDIA_ITEMS);
+
+			if (rs.next()) { // If there are results at all
+				int currentId = rs.getInt("media_item_id");
+				while (currentId >= 0) {
+					MediaItem m = new MediaItem();
+					currentId = readMediaItem(rs, currentId, m, false);
+					playListItems.add(m);
+				}
+			}
+			return playListItems;
+		} finally {
+			connection.close();
+		}
+	}
+
+	/**
 	 * Gets only the {@link MediaItem}s that are playlists. Does not get the
 	 * {@link MediaItem}s which are members of the playlist. Ignores all
 	 * playlists that don't have a name.
@@ -181,16 +216,12 @@ public class SongbirdDb {
 		try {
 			ResultSet rs = connection
 					.executeQuery(QUERY_MEDIA_LISTS_TYPE_SIMPLE);
-			// .executeQuery(QUERY_MEDIA_LISTS_DISTINCT);
 
 			if (rs.next()) { // If there are results at all
 				int currentId = rs.getInt("media_item_id");
 				while (currentId >= 0) {
 					MediaItem m = new MediaItem();
-					m.setId(currentId);
-					m.setListType(rs.getInt("media_list_type_id"));
-					m.setContentUrl(rs.getString("content_url"));
-					currentId = getProperties(m, rs, "media_item_id");
+					currentId = readMediaItem(rs, currentId, m, true);
 
 					String mediaListName = m
 							.getProperty(Property.PROP_MEDIA_LIST_NAME);
@@ -343,11 +374,7 @@ public class SongbirdDb {
 
 						// read the result set
 						MediaItem member = new MediaItem();
-						member.setId(currentId);
-						member.setListType(rs.getInt("media_list_type_id"));
-						member.setContentUrl(rs.getString("content_url"));
-						currentId = getProperties(member, rs,
-								"member_media_item_id");
+						currentId = readMediaItem(rs, currentId, member, true);
 
 						memberWrapper.setMember(member);
 
@@ -380,6 +407,30 @@ public class SongbirdDb {
 	}
 
 	/**
+	 * Reads all attributes of a {@link MediaItem} from a {@link ResultSet}.
+	 * 
+	 * @param rs
+	 *            database to read from
+	 * @param currentId
+	 * @param mediaItem
+	 *            item to attach the properties to
+	 * @return
+	 * @throws SQLException
+	 */
+	private int readMediaItem(ResultSet rs, int currentId, MediaItem mediaItem,
+			boolean setListType) throws SQLException {
+		mediaItem.setId(currentId);
+		mediaItem.setDateCreated(new Date(rs.getLong("created")));
+		mediaItem.setDateUpdated(new Date(rs.getLong("updated")));
+		if (setListType) {
+			mediaItem.setListType(rs.getInt("media_list_type_id"));
+		}
+		mediaItem.setContentUrl(rs.getString("content_url"));
+		currentId = readProperties(mediaItem, rs, "media_item_id");
+		return currentId;
+	}
+
+	/**
 	 * Reads all properties for an id column (integer) and appends them to
 	 * <code>mediaItem</code>. Note: This will only work well if <code>rs</code>
 	 * is ordered by <code>idColumn</code>.
@@ -394,7 +445,7 @@ public class SongbirdDb {
 	 * @throws SQLException
 	 *             database-related exceptions
 	 */
-	private int getProperties(final MediaItem mediaItem, final ResultSet rs,
+	private int readProperties(final MediaItem mediaItem, final ResultSet rs,
 			final String idColumn) throws SQLException {
 		boolean moreData = false;
 		int currentId = mediaItem.getId();

@@ -51,6 +51,14 @@ public final class Property {
 	public static final String PROP_RATING = "http://songbirdnest.com/data/1.0#rating";
 	/** Property constant for customType. */
 	public static final String PROP_CUSTOM_TYPE = "http://songbirdnest.com/data/1.0#customType";
+	/** Property constant for lastPlayTime. */
+	public static final String PROP_LAST_PLAY_TIME = "http://songbirdnest.com/data/1.0#lastPlayTime";
+	/** Property constant for playCount. */
+	public static final String PROP_PLAY_COUNT = "http://songbirdnest.com/data/1.0#playCount";
+	/** Property constant for lastSkipTime. */
+	public static final String PROP_LAST_SKIP_TIME = "http://songbirdnest.com/data/1.0#lastSkipTime";
+	/** Property constant for skipCount. */
+	public static final String PROP_SKIP_COUNT = "http://songbirdnest.com/data/1.0#skipCount";
 
 	/**
 	 * TODO Insert remaining properties
@@ -63,8 +71,6 @@ public final class Property {
 	 * 	public static final String PROP_ = "http://songbirdnest.com/data/1.0#discNumber";
 	 * 	public static final String PROP_ = "http://songbirdnest.com/data/1.0#totalDiscs";
 	 * 	public static final String PROP_ = "http://songbirdnest.com/data/1.0#totalTracks";
-	 * 	public static final String PROP_ = "http://songbirdnest.com/data/1.0#lastPlayTime";
-	 * 	public static final String PROP_ = "http://songbirdnest.com/data/1.0#playCount";
 	 * 	;
 	 * 	public static final String PROP_ = "http://songbirdnest.com/data/1.0#isSortable";
 	 * 	public static final String PROP_ = "http://songbirdnest.com/data/1.0#ordinal";
@@ -99,8 +105,6 @@ public final class Property {
 	 * 	public static final String PROP_ = "http://songbirdnest.com/data/1.0#producerName";
 	 * 	public static final String PROP_ = "http://songbirdnest.com/data/1.0#conductorName";
 	 * 	public static final String PROP_ = "http://songbirdnest.com/data/1.0#lyricistName";
-	 * 	public static final String PROP_ = "http://songbirdnest.com/data/1.0#lastSkipTime";
-	 * 	public static final String PROP_ = "http://songbirdnest.com/data/1.0#skipCount";
 	 * 	public static final String PROP_ = "http://songbirdnest.com/data/1.0#copyrightURL";
 	 * 	public static final String PROP_ = "http://songbirdnest.com/data/1.0#metadataUUID";
 	 * 	public static final String PROP_ = "http://songbirdnest.com/data/1.0#originLibraryGuid";
