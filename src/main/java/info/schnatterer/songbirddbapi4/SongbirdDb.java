@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package info.schnatterer.songbirddbapi4;
 
 import info.schnatterer.songbirddbapi4j.domain.MediaItem;
@@ -67,37 +66,13 @@ public class SongbirdDb {
 			+ "order by m.media_item_id ";
 
 	/**
-	 * Gets all lists that have the list type 'simple', INCLUDING empty ones.
-	 * Faster query than {@link #QUERY_MEDIA_LISTS_DISTINCT}. Does NOT find
-	 * dynamic playlist (subscriptions)
-	 */
-	public static final String QUERY_MEDIA_LISTS_TYPE_SIMPLE_OLD = "select m.media_item_id, m.content_url"
-			+ ", m.media_list_type_id, m.created, m.updated, r.property_id, r.obj from media_items m "
-			+ "left join resource_properties as r on m.media_item_id = r.media_item_id "
-			+ "left join media_list_types as mlt on m.media_list_type_id = mlt.media_list_type_id "
-			+ "where m.is_list = 1 "
-			+ "and mlt.type = 'simple'"
-			+ "order by m.media_item_id ";
-
-	/**
-	 * Gets all lists that are found within the simplemedialists table, that
-	 * does NOT including empty ones. Query is slower than
-	 * {@link #QUERY_MEDIA_ITEMS}. DOES find dynamic playlist (subscriptions)
-	 */
-	public static final String QUERY_MEDIA_LISTS_DISTINCT = "select distinct l.media_item_id, m.content_url "
-			+ ", m.media_list_type_id, m.created, m.updated, r.property_id, r.obj from simple_media_lists l "
-			+ "left join media_items m ON m.media_item_id = l.media_item_id "
-			+ "left join resource_properties as r on m.media_item_id = r.media_item_id "
-			+ "order by l.media_item_id";
-
-	/**
 	 * Gets all media items with a single playlist (realized as
 	 * {@link PreparedStatement}). The results contains several lines for one
 	 * member, that is it also contains the properties, in order to minimize the
 	 * queries sent to SQLite.
 	 * 
 	 */
-	public static final String QUERY_MEDIA_LIST = "select l.member_media_item_id, l.ordinal, m.content_url "
+	public static final String QUERY_MEDIA_LIST = "select l.member_media_item_id media_item_id, l.ordinal, m.content_url "
 			+ ", m.media_list_type_id, m.created, m.updated, r.property_id, r.obj from simple_media_lists l "
 			+ "left join media_items m ON m.media_item_id = l.member_media_item_id "
 			+ "left join resource_properties as r on m.media_item_id = r.media_item_id "
@@ -365,7 +340,7 @@ public class SongbirdDb {
 				List<MemberMediaItem> members = list.getMembers();
 
 				if (rs.next()) { // If there are results at all
-					int currentId = rs.getInt("member_media_item_id");
+					int currentId = rs.getInt("media_item_id");
 					while (currentId >= 0) {
 
 						MemberMediaItem memberWrapper = new MemberMediaItem();
@@ -414,7 +389,7 @@ public class SongbirdDb {
 	 * @param currentId
 	 * @param mediaItem
 	 *            item to attach the properties to
-	 * @return
+	 * @return the next id returned by the cursor
 	 * @throws SQLException
 	 */
 	private int readMediaItem(ResultSet rs, int currentId, MediaItem mediaItem,
