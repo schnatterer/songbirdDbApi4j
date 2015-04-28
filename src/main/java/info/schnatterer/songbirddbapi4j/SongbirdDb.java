@@ -50,10 +50,9 @@ public class SongbirdDb {
 			+ "where m.is_list = 0 " + "order by m.media_item_id ";
 
 	/**
-	 * Gets all media items that have is_list = 1, INCLUDING emtpy ones. Faster
-	 * query than {@link #QUERY_MEDIA_LISTS_TYPE_SIMPLE_OLD}. Does also find
-	 * dynamic playlist (subscriptions) (unfortunately also finds playlist that
-	 * have name null)
+	 * Gets all media items that have is_list = 1, INCLUDING emtpy ones. Also
+	 * finds dynamic playlist (subscriptions) (unfortunately also finds playlist
+	 * that have name null)
 	 */
 	public static final String QUERY_MEDIA_LISTS_TYPE_SIMPLE = "select m.media_item_id, m.content_url"
 			+ ", m.media_list_type_id, m.created, m.updated, r.property_id, r.obj from media_items m "
@@ -128,8 +127,10 @@ public class SongbirdDb {
 	/**
 	 * Gets only the {@link MediaItem}s that are not playlists.
 	 * 
-	 * @return
+	 * @return a list of all tracks
+	 * 
 	 * @throws SQLException
+	 *             database-related exceptions
 	 */
 	public List<MediaItem> getAllTracks() throws SQLException {
 		List<MediaItem> playListItems = new LinkedList<MediaItem>();
