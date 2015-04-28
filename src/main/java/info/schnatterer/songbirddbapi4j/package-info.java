@@ -20,5 +20,5 @@
  * @author schnatterer
  *
  */
-package info.schnatterer.songbirddbapi4;
+package info.schnatterer.songbirddbapi4j;
 

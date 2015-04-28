@@ -15,7 +15,7 @@
  */
 package info.schnatterer.songbirddbapi4j.domain;
 
-import info.schnatterer.songbirddbapi4.SongbirdDbConnection;
+import info.schnatterer.songbirddbapi4j.SongbirdDbConnection;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

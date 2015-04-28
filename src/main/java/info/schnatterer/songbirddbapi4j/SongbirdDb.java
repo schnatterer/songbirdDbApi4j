@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package info.schnatterer.songbirddbapi4;
+package info.schnatterer.songbirddbapi4j;
 
 import info.schnatterer.songbirddbapi4j.domain.MediaItem;
 import info.schnatterer.songbirddbapi4j.domain.MediaListTypes;
