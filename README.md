@@ -23,3 +23,9 @@ See the [wiki](https://github.com/schnatterer/songbirdDbApi4j/wiki) for details 
 ## History
 ###Version 1.0
 Very first version that provides very basic functionality for reading playlists from the database.
+
+## Examples
+
+This API is used in the following projects for example
+- [songbirdDbTools](https://github.com/schnatterer/songbirdDbTools)
+- [songbird2itunes](https://github.com/schnatterer/songbird2itunes)
