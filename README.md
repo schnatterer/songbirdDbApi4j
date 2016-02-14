@@ -1,4 +1,6 @@
 # songbirdDbApi4j
+[![Build Status](https://jenkins.schnatterer.info/job/songbirdDbApi4j/badge/icon)](https://jenkins.schnatterer.info/job/songbirdDbApi4j/)
+
 A java wrapper for songbird SQLite database.
 
 ## How to use
