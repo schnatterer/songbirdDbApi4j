@@ -45,9 +45,8 @@ Then add the actual dependency
             <version>v.2.0</version>
         </dependency>
     
-## History
-###Version 1.0
-Very first version that provides very basic functionality for reading playlists from the database.
+## Release notes
+See [Releases] (https://github.com/schnatterer/songbirdDbApi4j/releases).
 
 ## Examples
 
