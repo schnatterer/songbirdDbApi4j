@@ -1,5 +1,6 @@
 # songbirdDbApi4j
 [![Build Status](https://jenkins.schnatterer.info/job/songbirdDbApi4j/badge/icon)](https://jenkins.schnatterer.info/job/songbirdDbApi4j/)
+[![](https://jitpack.io/v/schnatterer/songbirdDbApi4j.svg)](https://jitpack.io/#schnatterer/songbirdDbApi4j)
 [<img alt="powered by openshift" align="right" src="https://www.openshift.com/images/logos/powered_by_openshift.png"/>](https://www.openshift.com/)
   
 A java wrapper for songbird SQLite database.
