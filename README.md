@@ -1,4 +1,6 @@
 # songbirdDbApi4j
+
+[![Build Status](https://travis-ci.org/schnatterer/songbirdDbApi4j.svg?branch=master)](https://travis-ci.org/schnatterer/songbirdDbApi4j)
 [![JitPack](https://jitpack.io/v/schnatterer/songbirdDbApi4j.svg)](https://jitpack.io/#schnatterer/songbirdDbApi4j)
 [![License](https://img.shields.io/github/license/schnatterer/songbirdDbApi4j.svg)](LICENSE)
   
